@@ -40,7 +40,9 @@ describe('App method', () => {
         assert(app.free === true);
 
         assert.equal(app.developer, 'King');
-        assertValidUrl(app.developerWebsite);
+        if (app.developerWebsite) {
+          assertValidUrl(app.developerWebsite);
+        }
 
         assert(app.screenshots.length);
         app.screenshots.map(assertValidUrl);
@@ -94,5 +96,23 @@ describe('App method', () => {
         done();
       })
       .catch(done);
+  });
+
+  it('should memoize the results when memoize enabled', () => {
+    const memoized = store.memoized();
+    return memoized.app({id: '553834731'})
+      .then((app) => {
+        assert.equal(app.appId, 'com.midasplayer.apps.candycrushsaga');
+        assert.equal(app.title, 'Candy Crush Saga');
+      });
+  });
+
+  it('should memoize the results with custom options', () => {
+    const memoized = store.memoized({maxAge: 1000, max: 10});
+    return memoized.app({id: '553834731'})
+      .then((app) => {
+        assert.equal(app.appId, 'com.midasplayer.apps.candycrushsaga');
+        assert.equal(app.title, 'Candy Crush Saga');
+      });
   });
 });
